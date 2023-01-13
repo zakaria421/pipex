@@ -6,7 +6,7 @@
 /*   By: zbentale <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/11 04:31:53 by zbentale          #+#    #+#             */
-/*   Updated: 2023/01/13 06:39:31 by zbentale         ###   ########.fr       */
+/*   Updated: 2023/01/13 06:42:34 by zbentale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,4 +148,5 @@ int	main(int argc, char **argv, char **envp)
 	// 			return (WEXITSTATUS(status));
 	// 	}
 	// }
+    //free strjoin
 }
