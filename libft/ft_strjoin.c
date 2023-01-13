@@ -6,7 +6,7 @@
 /*   By: zbentale <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/22 11:54:47 by zbentale          #+#    #+#             */
-/*   Updated: 2023/01/11 04:32:22 by zbentale         ###   ########.fr       */
+/*   Updated: 2023/01/13 05:26:23 by zbentale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,6 @@ char	*ft_strjoin(char *s1, char const *s2)
 	while (j < s2_len)
 		p[i++] = s2[j++];
 	p[i] = '\0';
-	free(s1);
+	//free(s1);
 	return (p);
 }
