@@ -6,7 +6,7 @@
 /*   By: zbentale <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/11 04:32:54 by zbentale          #+#    #+#             */
-/*   Updated: 2023/01/13 04:53:07 by zbentale         ###   ########.fr       */
+/*   Updated: 2023/01/15 03:18:30 by zbentale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <fcntl.h>
 # include <stdio.h>
 # include <unistd.h>
+# include <errno.h>
 
 typedef struct pipex
 {
