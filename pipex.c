@@ -6,19 +6,13 @@
 /*   By: zbentale <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/11 04:31:53 by zbentale          #+#    #+#             */
-/*   Updated: 2023/01/16 03:50:56 by zbentale         ###   ########.fr       */
+/*   Updated: 2023/01/19 22:24:09 by zbentale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	the_closer(int a, int b)
-{
-	close(a);
-	close(b);
-}
-
-int	pathfinder(t_pipex *pipex, char **envp)
+void	pathfinder(t_pipex *pipex, char **envp)
 {
 	pipex->i = 0;
 	while (envp[pipex->i])
@@ -33,11 +27,10 @@ int	pathfinder(t_pipex *pipex, char **envp)
 	if (envp[pipex->i] == NULL)
 	{
 		pipex->paths = NULL;
-		return (3);
+		return ;
 	}
 	pipex->paths = ft_split(pipex->save, ':');
 	pipex->i = 0;
-	return (0);
 }
 
 void	firstchild(t_pipex pipex, char **envp, char **argv)
@@ -49,7 +42,7 @@ void	firstchild(t_pipex pipex, char **envp, char **argv)
 	the_closer(pipex.fd[0], pipex.fd[1]);
 	the_closer(pipex.file1, pipex.file2);
 	pipex.cmd = ft_split(argv[2], ' ');
-	if (access(pipex.cmd[0], X_OK) == 0)
+	if (access(pipex.cmd[0], F_OK) == 0)
 	{
 		if (execve(pipex.cmd[0], pipex.cmd, envp) == -1)
 			ft_perror("ERROR");
@@ -58,14 +51,14 @@ void	firstchild(t_pipex pipex, char **envp, char **argv)
 	{
 		pipex.paths[pipex.i] = ft_strjoin(pipex.paths[pipex.i], "/");
 		pipex.paths[pipex.i] = ft_strjoin(pipex.paths[pipex.i], pipex.cmd[0]);
-		if (access(pipex.paths[pipex.i], X_OK) == 0)
+		if (access(pipex.paths[pipex.i], F_OK) == 0)
 		{
 			if (execve(pipex.paths[pipex.i], pipex.cmd, envp) == -1)
 				ft_perror("ERROR");
 		}
 		pipex.i++;
 	}
-	ft_error1("command not found1: ", pipex.cmd[0]);
+	ft_error1("command not found: ", pipex.cmd[0]);
 }
 
 void	secondchild(t_pipex pipex, char **envp, char **argv)
@@ -77,7 +70,7 @@ void	secondchild(t_pipex pipex, char **envp, char **argv)
 	the_closer(pipex.fd[0], pipex.fd[1]);
 	the_closer(pipex.file1, pipex.file2);
 	pipex.cmd = ft_split(argv[3], ' ');
-	if (access(pipex.cmd[0], X_OK) == 0)
+	if (access(pipex.cmd[0], F_OK) == 0)
 	{
 		if (execve(pipex.cmd[0], pipex.cmd, envp) == -1)
 			ft_perror("ERROR");
@@ -86,25 +79,43 @@ void	secondchild(t_pipex pipex, char **envp, char **argv)
 	{
 		pipex.paths[pipex.i] = ft_strjoin(pipex.paths[pipex.i], "/");
 		pipex.paths[pipex.i] = ft_strjoin(pipex.paths[pipex.i], pipex.cmd[0]);
-		if (access(pipex.paths[pipex.i], X_OK) == 0)
+		if (access(pipex.paths[pipex.i], F_OK) == 0)
 		{
 			if (execve(pipex.paths[pipex.i], pipex.cmd, envp) == -1)
 				ft_perror("ERROR");
 		}
 		pipex.i++;
 	}
-	ft_error2("command not found2: ", pipex.cmd[0]);
+	ft_error2("command not found: ", pipex.cmd[0]);
 	exit(127);
+}
+
+int	help(t_pipex pipex, char **envp, char **argv)
+{
+	int	status;
+
+	pipex.r = fork();
+	if (pipex.r == 0)
+		secondchild(pipex, envp, argv);
+	else
+	{
+		the_closer(pipex.file1, pipex.file2);
+		the_closer(pipex.fd[0], pipex.fd[1]);
+		waitpid(pipex.k, NULL, 0);
+		waitpid(pipex.r, &status, 0);
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
+	}
+	return (0);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_pipex	pipex;
-	int		status;
 
 	if (argc != 5)
 		ft_error3("invalid arguments\n");
-	pipex.b = pathfinder(&pipex, envp);
+	pathfinder(&pipex, envp);
 	pipex.file1 = open(argv[1], O_RDONLY | 0644);
 	if (pipex.file1 == -1)
 		perror("Error");
@@ -117,18 +128,5 @@ int	main(int argc, char **argv, char **envp)
 	if (pipex.k == 0)
 		firstchild(pipex, envp, argv);
 	else
-	{
-		pipex.r = fork();
-		if (pipex.r == 0)
-			secondchild(pipex, envp, argv);
-		else
-		{
-			the_closer(pipex.file1, pipex.file2);
-			the_closer(pipex.fd[0], pipex.fd[1]);
-			waitpid(pipex.k, NULL, 0);
-			waitpid(pipex.r, &status, 0);
-			if (WIFEXITED(status))
-				return (WEXITSTATUS(status));
-		}
-	}
+		return (help(pipex, envp, argv));
 }

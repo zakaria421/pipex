@@ -6,7 +6,7 @@
 /*   By: zbentale <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/12 22:42:49 by zbentale          #+#    #+#             */
-/*   Updated: 2023/01/16 18:16:17 by zbentale         ###   ########.fr       */
+/*   Updated: 2023/01/19 22:10:44 by zbentale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,13 @@
 void	ft_perror(char *str)
 {
 	perror(str);
-	exit(1);
+	exit(126);
 }
 
-void	ft_error(char *str, char *st)
+void	the_closer(int a, int b)
 {
-	write(2, str, ft_strlen(str));
-	write(2, st, ft_strlen(st));
-	write(2, "\n", 1);
+	close(a);
+	close(b);
 }
 
 void	ft_error1(char *str, char *st)
